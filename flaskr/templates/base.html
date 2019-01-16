@@ -1,0 +1,33 @@
+<!doctype html>
+<title>{% block title %}{% endblock &} - Flaskr</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<nav>
+  <h1>Flasker</h1>
+  <ul>
+    <!-- "g" is automatically available in templates.  
+      -- url_for() is also automatically available to templates
+      -- If a user is logged in, the user name and a logout button
+      is displayed.  If a user is not logged in, Then a link to register
+      and a link to log in is displayed instead
+    -->
+    {% if g.user %}
+      <li><span>{{ g.user['username'] }}</span></li>
+      <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+    {% else  %}
+    <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+    <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
+    {% endif %}
+  </ul>
+</nav>
+<section class="content">
+  <header>
+    {% block header %}{% endblock %}
+  </header>
+  <!-- for loop through messages in flash().
+    -- this will display the errors to the user
+  -->
+  {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</section>
