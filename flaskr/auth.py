@@ -7,38 +7,54 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from flaskr.db import get_db
 
+# define blueprint for '/auth' endpoint
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 # ################## REGISTER FUNCTIONS #################### #
 
 
+# adds '/register' to '/auth' endpoint.  results in '/auth/register'
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
+        # pulls username and password from the request form
         username = request.form['username']
         password = request.form['password']
         db = get_db()
         error = None
 
+        # validates that username exists
         if not username:
             error = 'Username is required.'
+            # validates that password exits
         elif not password:
             error = 'Password is required.'
+            # db.execute uses as many '?' as necessary for palceholders.  Second argument of
+            # db.execute fills in values for '?' in first argument.
+            #
+            # Validates to make sure username is not already present in the database and
+            # throws creates an error if user already exists
         elif db.execute(
             'SELECT id FROM user WHERE username = ?', (username,)
         ).fetchone() is not None:
             error = 'User {} is already registered.'.format(username)
 
+        # if there is no error, create the new user with 'username' and hashed 'password'
         if error is None:
             db.execute(
                 'INSERT INTO user (username, password) VALUES (?, ?)',
                 (username, generate_password_hash(password))
             )
+            # db.commit needs to be called in order to save changes (according to the tutorial)
             db.commit()
+            # redirect after successful registration to instantly login user
             return redirect(url_for('auth.login'))
 
+        # flash() is a special function used to store error messages that are retrieved when
+        # rendering the template. If error != None, the error will display to the user
         flash(error)
 
+    # render_template() calls a specific html template to be rendered
     return render_template('auth/register.html')
 
 # ################### LOGIN FUNCTION ####################### #
@@ -105,4 +121,3 @@ def login_required(view):
         return view(**kwargs)
 
     return wrapped_view
-
