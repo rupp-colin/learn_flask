@@ -42,7 +42,7 @@ def register():
 
 # ################### LOGIN FUNCTION ####################### #
 
-@db.route('/login', methods=('GET', 'POST'))
+@bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
         username = request.form['username']
@@ -66,3 +66,5 @@ def login():
         flash(error)
 
     return render_template('auth/login.html')
+
+
