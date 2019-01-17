@@ -25,9 +25,9 @@ def create_app(test_config=None):
         pass
 
     # a simple page that says hello
-    @app.route('/hello/'name)
+    @app.route('/hello')
     def hello(name):
-        return 'Hello, ' + name + '! Great job making your first flask app :D'
+        return 'Hello, Colin! Great job making your first flask app :D'
 
     from . import db
     db.init_app(app)
