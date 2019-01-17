@@ -20,6 +20,7 @@ def register():
         # pulls username and password from the request form
         username = request.form['username']
         password = request.form['password']
+        passConfirm = request.form['passConfirm']
         db = get_db()
         error = None
 
@@ -29,11 +30,16 @@ def register():
             # validates that password exits
         elif not password:
             error = 'Password is required.'
+            # validates that the password matches the intended password
+        elif password != passConfirm:
+            error = 'Passwords do not match.'
             # db.execute uses as many '?' as necessary for palceholders. Second
             # argument of db.execute fills in values for '?' in first argument.
             #
             # Validates to make sure username is not already present in the
             # database and throws creates an error if user already exists
+        elif password != passConfirm:
+            error = 'Passwords do not match.'
         elif db.execute(
             'SELECT id FROM user WHERE username = ?', (username,)
         ).fetchone() is not None:
